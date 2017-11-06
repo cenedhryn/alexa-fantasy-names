@@ -63,7 +63,7 @@ public class FantasyNamesSpeechlet implements SpeechletV2 {
      * @return SpeechletResponse spoken and visual response for the given intent
      */
     private SpeechletResponse getWelcomeResponse() {
-        String speechText = "Welcome to Fantasy Names, you can ask for a name";
+        String speechText = "Welcome to Fantasy Names. You can ask for a name";
         return getAskResponse("FantasyNames", speechText);
     }
 
