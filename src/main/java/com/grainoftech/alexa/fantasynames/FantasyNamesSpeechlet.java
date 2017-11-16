@@ -2,6 +2,7 @@ package com.grainoftech.alexa.fantasynames;
 
 import com.amazon.speech.json.SpeechletRequestEnvelope;
 import com.amazon.speech.slu.Intent;
+import com.amazon.speech.slu.Slot;
 import com.amazon.speech.speechlet.*;
 import com.amazon.speech.ui.OutputSpeech;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
@@ -42,7 +43,17 @@ public class FantasyNamesSpeechlet implements SpeechletV2 {
 
         if ("GenerateNameIntent".equals(intentName)) {
             NameGenerator generator = new NameGenerator();
-            return createResponse(generator.generateName(NameGenerator.Type.FANTASY));
+            return createNameResponse(generator.generateName(NameGenerator.Type.FANTASY));
+        } else if ("GetNameCategoryIntent".equals(intentName)) {
+            return createCategoryListResponse();
+        } else if ("GenerateCategoryNameIntent".equals(intentName)) {
+            Slot nameCategory = intent.getSlot("nameType");
+            NameGenerator generator = new NameGenerator();
+            if (generator.existsCategory(nameCategory.getValue())) {
+                return createNameResponse(generator.generateName(NameGenerator.Type.valueOf(nameCategory.getValue().toUpperCase())));
+            } else {
+                return createNameResponse(generator.generateName(NameGenerator.Type.FANTASY));
+            }
         } else if ("AMAZON.HelpIntent".equals(intentName)) {
             return getHelpResponse();
         } else {
@@ -68,12 +79,30 @@ public class FantasyNamesSpeechlet implements SpeechletV2 {
     }
 
     /**
+     * Creates a {@code SpeechletResponse} for the name intent.
+     *
+     * @return SpeechletResponse spoken and visual response for the given intent
+     */
+    private SpeechletResponse createNameResponse(String response) {
+        String speechText = response;
+
+        // Create the Simple card content.
+        SimpleCard card = getSimpleCard("FantasyNames", speechText);
+
+        // Create the plain text output.
+        PlainTextOutputSpeech speech = getPlainTextOutputSpeech(speechText);
+
+        return SpeechletResponse.newTellResponse(speech, card);
+    }
+
+    /**
      * Creates a {@code SpeechletResponse} for the hello intent.
      *
      * @return SpeechletResponse spoken and visual response for the given intent
      */
-    private SpeechletResponse createResponse(String response) {
-        String speechText = response;
+    private SpeechletResponse createCategoryListResponse() {
+        String speechText = "You can choose from the following types of names:";
+        speechText += "Fantasy, Pony, Princess or Scary. Say the type of name you want to have.";
 
         // Create the Simple card content.
         SimpleCard card = getSimpleCard("FantasyNames", speechText);
