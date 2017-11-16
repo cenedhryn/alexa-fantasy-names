@@ -9,6 +9,15 @@ import java.util.Random;
  */
 class NameGenerator {
 
+    public boolean existsCategory(String value) {
+        for (Type type : Type.values()) {
+            if (type.toString().equals(value.toUpperCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public enum Type {FANTASY, PONY, SCARY, PRINCESS};
 
     /**
